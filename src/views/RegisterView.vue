@@ -10,8 +10,10 @@
       </div>
     </div>
     <div class="main">
-      <div class="desc"><h2>注册</h2></div>
       <el-form :model="formData" :rules="rules">
+        <el-form-item>
+          <h2>注册</h2>
+        </el-form-item>
         <el-form-item prop="accountName">
           <el-input
             v-model="formData.accountName"
@@ -42,21 +44,26 @@
           ></el-input>
         </el-form-item>
         <el-form-item id="verify-code" prop="emailCode">
-          <el-input
-            class="code-input"
-            v-model="formData.emailCode"
-            placeholder="验证码"
-          ></el-input>
-          <el-button
-            class="code-button"
-            @click="clickLimit()"
-            :disabled="lockBtn"
-            >{{ codeBtn }}</el-button
-          >
+          <div id="verify-code">
+            <el-input
+              class="code-input"
+              v-model="formData.emailCode"
+              placeholder="验证码"
+            ></el-input>
+
+            <el-button
+              class="code-button"
+              @click="getEmailCode()"
+              :disabled="lockBtn"
+              >{{ codeBtn }}</el-button
+            >
+          </div>
         </el-form-item>
         <el-form-item class="submit">
-          <el-button type="primary" @click="register">注册</el-button>
-          <el-link type="primary" href="/login">使用已有账号登录</el-link>
+          <div class="submit">
+            <el-button type="primary" @click="register">注册</el-button>
+            <el-link type="primary" href="/login">使用已有账号登录</el-link>
+          </div>
         </el-form-item>
       </el-form>
     </div>
@@ -86,6 +93,7 @@ export default {
       emailCode: "",
     });
     let codeBtn = ref("获取验证码");
+
     const rules = {
       accountName: {
         required: true,
@@ -123,8 +131,8 @@ export default {
       },
     };
 
-    let lockBtn = ref(false);
-    const clickLimit = () => {
+    const lockBtn = ref(false);
+    const getEmailCode = () => {
       // 倒计时
       if (!lockBtn.value) {
         lockBtn.value = !lockBtn.value;
@@ -135,7 +143,7 @@ export default {
             codeBtn.value = seconds;
             seconds -= 1;
           } else {
-            clearInterval;
+            clearInterval();
             lockBtn.value = !lockBtn.value;
             codeBtn.value = "获取验证码";
           }
@@ -149,7 +157,8 @@ export default {
       formData,
       rules,
       codeBtn,
-      clickLimit,
+      lockBtn,
+      getEmailCode,
       register,
     };
   },
@@ -203,8 +212,8 @@ export default {
     .code-input {
       width: 50%;
     }
-    :code-button {
-      width: 30%;
+    button {
+      min-width: 30%;
     }
   }
   .submit {
