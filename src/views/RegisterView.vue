@@ -136,14 +136,14 @@ export default {
       // 倒计时
       if (!lockBtn.value) {
         lockBtn.value = !lockBtn.value;
-        let seconds = 60;
+        let seconds = 5;
 
-        setInterval(() => {
+        const myInterval = setInterval(() => {
           if (seconds > 0) {
             codeBtn.value = seconds;
             seconds -= 1;
           } else {
-            clearInterval();
+            clearInterval(myInterval);
             lockBtn.value = !lockBtn.value;
             codeBtn.value = "获取验证码";
           }
