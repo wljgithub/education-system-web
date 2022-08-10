@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="main">
-      <el-form :model="formData" :rules="rules">
+      <el-form :model="formData" :rules="rules" ref="formRef">
         <el-form-item>
           <h2>注册</h2>
         </el-form-item>
@@ -53,7 +53,7 @@
 
             <el-button
               class="code-button"
-              @click="getEmailCode()"
+              @click="getEmailCode"
               :disabled="lockBtn"
               >{{ codeBtn }}</el-button
             >
@@ -61,7 +61,7 @@
         </el-form-item>
         <el-form-item class="submit">
           <div class="submit">
-            <el-button type="primary" @click="register">注册</el-button>
+            <el-button type="primary" @click="register()">注册</el-button>
             <el-link type="primary" href="/login">使用已有账号登录</el-link>
           </div>
         </el-form-item>
@@ -82,9 +82,12 @@
 
 <script>
 import { reactive, ref } from "vue";
+import * as registerApi from "@/api/register.js";
+import { ElMessage } from "element-plus";
 
 export default {
   setup() {
+    const formRef = ref(null);
     const formData = reactive({
       accountName: "",
       password: "",
@@ -135,29 +138,49 @@ export default {
     const getEmailCode = () => {
       // 倒计时
       if (!lockBtn.value) {
-        lockBtn.value = !lockBtn.value;
-        let seconds = 5;
+        // 调用后端接口获取邮箱验证码
+        registerApi.getEmailCode({
+          email:formData.email,
+        });
 
-        const myInterval = setInterval(() => {
+        lockBtn.value = !lockBtn.value;
+        let seconds = 60;
+
+        const countDown = setInterval(() => {
           if (seconds > 0) {
             codeBtn.value = seconds;
             seconds -= 1;
           } else {
-            clearInterval(myInterval);
+            clearInterval(countDown);
             lockBtn.value = !lockBtn.value;
             codeBtn.value = "获取验证码";
           }
         }, 1000);
       }
     };
+
     const register = () => {
-      //TODO: 将表单数据提交到后台，如果成功则跳转到登录页，失败则提示
+      // 将表单数据提交到后台，如果成功则跳转到登录页，失败则提示
+      // 检测所有表单必填项
+      formRef.value.validate((valid) => {
+        if (!valid) return;
+        registerApi.submitRegisterForm({
+          accountName:formData.accountName,
+          password:formData.password,
+          passwordAgain:formData.passwordAgain,
+          email:formData.email,
+          emailCode: formData.emailCode
+        }).then(() => {
+            ElMessage({ message: "注册成功", type: "success" });
+        });
+      });
     };
     return {
       formData,
       rules,
       codeBtn,
       lockBtn,
+      formRef,
       getEmailCode,
       register,
     };
