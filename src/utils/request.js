@@ -10,11 +10,20 @@ const request = axios.create({
 
 // 异常拦截器
 const errorHandler = (error) => {
+  if (error.response && error.response.data && error.response.data.code !== 0) {
+    let message = error.response.data.message;
+    ElMessage({
+      message: message,
+      grouping: true,
+      type: "error",
+      center: true,
+    });
+    return Promise.reject(message);
+  }
+
   if (error.response) {
     // 从localstorage 获取 token
     // 处理 401 认证失败 和 403 权限
-
-
   }
 
   return Promise.reject(error);
@@ -23,7 +32,7 @@ const errorHandler = (error) => {
 // 如果用户已登录，每次请求都携带token
 request.interceptors.request.use((config) => {
   return config;
-}, errorHandler);
+});
 
 request.interceptors.response.use((response) => {
   // 提示服务端的错误信息
@@ -35,7 +44,7 @@ request.interceptors.response.use((response) => {
       type: "error",
       center: true,
     });
-    return Promise.reject(data.message)
+    return Promise.reject(data.message);
   }
   return data;
 }, errorHandler);
