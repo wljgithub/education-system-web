@@ -84,9 +84,11 @@
 import { reactive, ref } from "vue";
 import * as registerApi from "@/api/register.js";
 import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
+    const router = useRouter();
     const formRef = ref(null);
     const formData = reactive({
       accountName: "",
@@ -140,7 +142,7 @@ export default {
       if (!lockBtn.value) {
         // 调用后端接口获取邮箱验证码
         registerApi.getEmailCode({
-          email:formData.email,
+          email: formData.email,
         });
 
         lockBtn.value = !lockBtn.value;
@@ -164,15 +166,18 @@ export default {
       // 检测所有表单必填项
       formRef.value.validate((valid) => {
         if (!valid) return;
-        registerApi.submitRegisterForm({
-          accountName:formData.accountName,
-          password:formData.password,
-          passwordAgain:formData.passwordAgain,
-          email:formData.email,
-          emailCode: formData.emailCode
-        }).then(() => {
+        registerApi
+          .submitRegisterForm({
+            accountName: formData.accountName,
+            password: formData.password,
+            passwordAgain: formData.passwordAgain,
+            email: formData.email,
+            emailCode: formData.emailCode,
+          })
+          .then(() => {
             ElMessage({ message: "注册成功", type: "success" });
-        });
+            router.push("/login");
+          });
       });
     };
     return {
