@@ -125,6 +125,14 @@ export default {
     };
     const lockBtn = ref(false);
     const getEmailCode = () => {
+      // 需要校验验证码是否被填写
+
+      // 如果邮箱为空，则提示需要填写邮箱
+      if (!formData.email) {
+        ElMessage({ message: "请先填写邮箱" });
+        return;
+      }
+
       // 倒计时
       if (!lockBtn.value) {
         // 调用后端接口获取邮箱验证码
