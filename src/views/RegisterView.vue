@@ -1,13 +1,7 @@
 <template>
   <div class="body">
     <div class="header">
-      <div class="title">
-        <img src="../assets/login-logo.svg" alt="logo" />
-        <h1>教务管理系统</h1>
-      </div>
-      <div class="desc">
-        <p>一个专注于为师生服务的管理系统</p>
-      </div>
+      <SystemIntro></SystemIntro>
     </div>
     <div class="main">
       <el-form :model="formData" :rules="rules" ref="formRef">
@@ -68,14 +62,7 @@
       </el-form>
     </div>
     <div class="footer">
-      <div class="links">
-        <el-link type="info">帮助</el-link>
-        <el-link type="info">隐私</el-link>
-        <el-link type="info">条款</el-link>
-      </div>
-      <div class="copyright">
-        <el-link type="info">Copyright@2022</el-link>
-      </div>
+      <SystemFooter></SystemFooter>
     </div>
   </div>
 </template>
@@ -85,6 +72,8 @@ import { reactive, ref } from "vue";
 import * as registerApi from "@/api/register.js";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
+import SystemIntro from "@/components/SystemIntro.vue";
+import SystemFooter from "@/components/SystemFooter.vue";
 
 export default {
   setup() {
@@ -98,7 +87,6 @@ export default {
       emailCode: "",
     });
     let codeBtn = ref("获取验证码");
-
     const rules = {
       accountName: {
         required: true,
@@ -135,7 +123,6 @@ export default {
         pattern: /^[0-9]{6,}$/,
       },
     };
-
     const lockBtn = ref(false);
     const getEmailCode = () => {
       // 倒计时
@@ -144,10 +131,8 @@ export default {
         registerApi.getEmailCode({
           email: formData.email,
         });
-
         lockBtn.value = !lockBtn.value;
         let seconds = 60;
-
         const countDown = setInterval(() => {
           if (seconds > 0) {
             codeBtn.value = seconds;
@@ -160,7 +145,6 @@ export default {
         }, 1000);
       }
     };
-
     const register = () => {
       // 将表单数据提交到后台，如果成功则跳转到登录页，失败则提示
       // 检测所有表单必填项
@@ -190,36 +174,21 @@ export default {
       register,
     };
   },
+  components: { SystemIntro, SystemFooter },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .body {
-  background: inherit;
+  height: 100vh;
+  overflow: auto;
   background: rgba(224, 234, 255, 0.4);
   box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.16);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.header {
-  margin-top: 80px;
-  width: 350px;
-  height: 170px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  .title {
-    width: 100%;
-    height: 115px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .desc {
-    margin-top: 30px;
-  }
-}
+
 .main {
   margin-top: 80px;
   width: 305px;
@@ -252,21 +221,6 @@ export default {
     button {
       width: 117px;
     }
-  }
-}
-.footer {
-  margin-top: 80px;
-  width: 305px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  .links {
-    display: flex;
-    width: 100%;
-    justify-content: space-evenly;
-  }
-  .copyright {
-    margin-top: 21px;
   }
 }
 </style>
