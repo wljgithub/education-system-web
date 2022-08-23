@@ -40,7 +40,7 @@
         </el-form-item>
         <el-form-item>
           <div class="register-link">
-            <el-link type="primary" href="/login">注册账号</el-link>
+            <el-link type="primary" href="/register">注册账号</el-link>
           </div>
         </el-form-item>
       </el-form>
@@ -91,6 +91,12 @@ export default {
         trigger: "blur",
       },
     };
+
+    // 页面初始化时去后端拉取图片验证码，并且渲染的页面上
+    getCaptcha().then((res) => {
+      // 把图片渲染到页面上
+      imageUrl.value = res.data.captcha;
+    });
 
     const getImageCode = () => {
       // 点击图形验证码会刷新，并且登录失败也会刷新
